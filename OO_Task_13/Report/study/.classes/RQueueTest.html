@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RQueueTest</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">study</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RQueueTest (study)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RQueueTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95.7%
+  </span>
+  <span class="absValue">
+    (22/ 23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package study;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.junit.Before;
+<i>4</i>&nbsp;import org.junit.Test;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import static org.junit.Assert.*;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;/**
+<i>9</i>&nbsp; * Created by luxia on 2016/6/3.
+<i>10</i>&nbsp; */
+<b class="fc"><i>11</i>&nbsp;public class RQueueTest {</b>
+<b class="fc"><i>12</i>&nbsp;	private static RQueue q = new RQueue();</b>
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;	@Before
+<i>15</i>&nbsp;	public void before() throws Exception {
+<b class="fc"><i>16</i>&nbsp;		q.addRequest(new Request(1, 1, 1, 1));</b>
+<b class="fc"><i>17</i>&nbsp;	}</b>
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;	@Test
+<i>20</i>&nbsp;	public void testgetRequest() throws Exception {
+<b class="fc"><i>21</i>&nbsp;		q.getRequest(0);</b>
+<b class="fc"><i>22</i>&nbsp;	}</b>
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;	@Test
+<i>25</i>&nbsp;	public void testaddRequest() throws Exception {
+<b class="fc"><i>26</i>&nbsp;		assertEquals(q.addRequest(new Request(1, 1, 1, 1)), true);</b>
+<b class="fc"><i>27</i>&nbsp;	}</b>
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;	@Test
+<i>30</i>&nbsp;	public void testdelRequest() throws Exception {
+<b class="fc"><i>31</i>&nbsp;		assertEquals(q.delRequest(1), true);</b>
+<i>32</i>&nbsp;		try {
+<b class="fc"><i>33</i>&nbsp;			assertEquals(q.delRequest(5), false);</b>
+<i>34</i>&nbsp;		}
+<b class="fc"><i>35</i>&nbsp;		catch (Exception e) {</b>
+<b class="fc"><i>36</i>&nbsp;			System.out.println(e.toString());</b>
+<b class="nc"><i>37</i>&nbsp;		}</b>
+<b class="fc"><i>38</i>&nbsp;	}</b>
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;	@Test
+<i>41</i>&nbsp;	public void testgetRindex() throws Exception {
+<b class="fc"><i>42</i>&nbsp;		q.getRindex();</b>
+<b class="fc"><i>43</i>&nbsp;	}</b>
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;	@Test
+<i>46</i>&nbsp;	public void testsetDone() throws Exception {
+<b class="fc"><i>47</i>&nbsp;		assertEquals(q.setDone(0), true);</b>
+<b class="fc"><i>48</i>&nbsp;	}</b>
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;	@Test
+<i>51</i>&nbsp;	public void testsetQueue() throws Exception {
+<b class="fc"><i>52</i>&nbsp;		assertEquals(q.setQueue(0), true);</b>
+<b class="fc"><i>53</i>&nbsp;	}</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;	@Test
+<i>56</i>&nbsp;	public void testinfo() throws Exception {
+<b class="fc"><i>57</i>&nbsp;		q.addRequest(new Request(2, 2, 2, 1));</b>
+<b class="fc"><i>58</i>&nbsp;		assertEquals(q.info(),true);</b>
+<b class="fc"><i>59</i>&nbsp;	}</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2016-06-04 11:07</div>
+</div>
+</body>
+</html>

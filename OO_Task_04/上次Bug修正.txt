@@ -1,0 +1,6 @@
+(FR,6,DOWN,0)
+(FR,4,DOWN,0)
+(FR,9,DOWN,0)
+run
+
+通过修改FR的捎带条件改正了次Bug

@@ -1,0 +1,236 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RQueue</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">study</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RQueue (study)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RQueue</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (32/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package study;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.io.BufferedReader;
+<i>4</i>&nbsp;import java.io.IOException;
+<i>5</i>&nbsp;import java.io.InputStreamReader;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/**
+<i>8</i>&nbsp; * 请求队列类
+<i>9</i>&nbsp; * 主要用于存储请求及完成请求队列的相关操作
+<i>10</i>&nbsp; * 定义了一个Request类型的数组来保存请求
+<i>11</i>&nbsp; * 定义了rindex来作为当前队列的指针
+<i>12</i>&nbsp; * 包括ReqpOK方法
+<i>13</i>&nbsp; * 包括从请求队列中获得、添加、删除请求的方法
+<i>14</i>&nbsp; * 包括获得请求队列请求个数的方法
+<i>15</i>&nbsp; * 包括设置请求done和inQueue属性的方法
+<i>16</i>&nbsp; * 包括显示请求队列信息的方法
+<i>17</i>&nbsp; */
+<b class="fc"><i>18</i>&nbsp;public class RQueue {</b>
+<b class="fc"><i>19</i>&nbsp;	private Request[] requests = new Request[100000];</b>
+<b class="fc"><i>20</i>&nbsp;	private int rindex = 0;</b>
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;	/**
+<i>23</i>&nbsp;	 * 电梯类的RepOK方法，用来获取当前对象不变式的值
+<i>24</i>&nbsp;	 *
+<i>25</i>&nbsp;	 * @return 当前对象不变式的值
+<i>26</i>&nbsp;	 */
+<i>27</i>&nbsp;	//Requires: this is initialized
+<i>28</i>&nbsp;	//Modifies: null
+<i>29</i>&nbsp;	//Effects : 获取当前对象不变式的值
+<i>30</i>&nbsp;	/*public boolean RepOK() {
+<i>31</i>&nbsp;		if (!(requests instanceof Request[])) {
+<i>32</i>&nbsp;			return false;
+<i>33</i>&nbsp;		}
+<i>34</i>&nbsp;		if (rindex &lt; 0) {
+<i>35</i>&nbsp;			return false;
+<i>36</i>&nbsp;		}
+<i>37</i>&nbsp;		return true;
+<i>38</i>&nbsp;	}
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * 获取第i个队列用的方法
+<i>42</i>&nbsp;	 *
+<i>43</i>&nbsp;	 * @param i 要取的第i个队列
+<i>44</i>&nbsp;	 * @return 请求中的第i个队列
+<i>45</i>&nbsp;	 */
+<i>46</i>&nbsp;	//Requires: 需要取出的请求的序号i
+<i>47</i>&nbsp;	//Modifies: null
+<i>48</i>&nbsp;	//Effects : 获取第i个队列用的方法
+<i>49</i>&nbsp;	public Request getRequest(int i) {
+<b class="fc"><i>50</i>&nbsp;		return requests[i];</b>
+<i>51</i>&nbsp;	}
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;	/**
+<i>54</i>&nbsp;	 * 向请求队列中添加请求的方法
+<i>55</i>&nbsp;	 *
+<i>56</i>&nbsp;	 * @param request 需要添加的请求
+<i>57</i>&nbsp;	 * @return 方法成功执行则返回true
+<i>58</i>&nbsp;	 */
+<i>59</i>&nbsp;	//Requires: 需要添加的请求request
+<i>60</i>&nbsp;	//Modifies: request rindex
+<i>61</i>&nbsp;	//Effects : 向队列中添加请求request
+<i>62</i>&nbsp;	public boolean addRequest(Request request) {
+<b class="fc"><i>63</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>64</i>&nbsp;		requests[rindex++] = request;</b>
+<b class="fc"><i>65</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>66</i>&nbsp;		return ret;</b>
+<i>67</i>&nbsp;	}
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;	/**
+<i>70</i>&nbsp;	 * 删除请求队列中第index个请求的方法
+<i>71</i>&nbsp;	 *
+<i>72</i>&nbsp;	 * @param index 需要删除的请求序号
+<i>73</i>&nbsp;	 *              @return 方法成功执行则返回true
+<i>74</i>&nbsp;	 * @throws FormatException 格式错误
+<i>75</i>&nbsp;	 */
+<i>76</i>&nbsp;	//Requires: 需要删除的请求序号
+<i>77</i>&nbsp;	//Modifies: rindex request
+<i>78</i>&nbsp;	//Effects : 删除请求队列中第index个请求
+<i>79</i>&nbsp;	public boolean delRequest(int index) throws FormatException {
+<b class="fc"><i>80</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>81</i>&nbsp;		if (index &gt; rindex) {</b>
+<b class="fc"><i>82</i>&nbsp;			throw new FormatException(&quot;index larger than rindex!&quot;);</b>
+<i>83</i>&nbsp;		}
+<b class="fc"><i>84</i>&nbsp;		for (int i = index; i &lt; rindex; i++) {</b>
+<b class="fc"><i>85</i>&nbsp;			requests[i] = requests[i + 1];</b>
+<i>86</i>&nbsp;		}
+<b class="fc"><i>87</i>&nbsp;		rindex -= 1;</b>
+<b class="fc"><i>88</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>89</i>&nbsp;		return ret;</b>
+<i>90</i>&nbsp;	}
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;	/**
+<i>93</i>&nbsp;	 * 得到rindex的方法
+<i>94</i>&nbsp;	 *
+<i>95</i>&nbsp;	 * @return rindex的值
+<i>96</i>&nbsp;	 */
+<i>97</i>&nbsp;	//Requires: null
+<i>98</i>&nbsp;	//Modifies: null
+<i>99</i>&nbsp;	//Effects : 得到rindex的方法
+<i>100</i>&nbsp;	public int getRindex() {
+<b class="fc"><i>101</i>&nbsp;		return rindex;</b>
+<i>102</i>&nbsp;	}
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;	/**
+<i>105</i>&nbsp;	 * 设置请求done属性的方法
+<i>106</i>&nbsp;	 *
+<i>107</i>&nbsp;	 * @param index 需要设置的请求的编号
+<i>108</i>&nbsp;	 * @return 方法成功执行则返回true
+<i>109</i>&nbsp;	 */
+<i>110</i>&nbsp;	//Requires: 需要设置的请求的编号
+<i>111</i>&nbsp;	//Modifies: request[index]
+<i>112</i>&nbsp;	//Effects : 将request中的第index个请求设置为已完成
+<i>113</i>&nbsp;	public boolean setDone(int index) {
+<b class="fc"><i>114</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>115</i>&nbsp;		requests[index].Done();</b>
+<b class="fc"><i>116</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>117</i>&nbsp;		return ret;</b>
+<i>118</i>&nbsp;	}
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;	/**
+<i>121</i>&nbsp;	 * 设置请求inqueue属性的方法
+<i>122</i>&nbsp;	 *
+<i>123</i>&nbsp;	 * @param index 需要设置的请求的编号
+<i>124</i>&nbsp;	 *              @return 方法成功执行则返回true
+<i>125</i>&nbsp;	 */
+<i>126</i>&nbsp;	//Requires: 需要设置的请求的编号
+<i>127</i>&nbsp;	//Modifies: request[index]
+<i>128</i>&nbsp;	//Effects : 将request中的第index个请求设置为已入队
+<i>129</i>&nbsp;	public boolean setQueue(int index) {
+<b class="fc"><i>130</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>131</i>&nbsp;		requests[index].setInQueue();</b>
+<b class="fc"><i>132</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>133</i>&nbsp;		return ret;</b>
+<i>134</i>&nbsp;	}
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;	/**
+<i>137</i>&nbsp;	 * 打印队列中的请求的详细信息
+<i>138</i>&nbsp;	 * @return 方法成功执行则返回true
+<i>139</i>&nbsp;	 */
+<i>140</i>&nbsp;	//Requires: null
+<i>141</i>&nbsp;	//Modifies: null
+<i>142</i>&nbsp;	//Effects : 打印队列中的请求的详细信息
+<i>143</i>&nbsp;	public boolean info() {
+<b class="fc"><i>144</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>145</i>&nbsp;		System.out.print(requests[0].toString() + &quot; (&quot;);</b>
+<b class="fc"><i>146</i>&nbsp;		for (int i = 1; i &lt; rindex; i++) {</b>
+<b class="fc"><i>147</i>&nbsp;			System.out.print(requests[i].toString());</b>
+<i>148</i>&nbsp;		}
+<b class="fc"><i>149</i>&nbsp;		System.out.println(&quot;)&quot;);</b>
+<b class="fc"><i>150</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>151</i>&nbsp;		return ret;</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2016-06-04 11:07</div>
+</div>
+</body>
+</html>

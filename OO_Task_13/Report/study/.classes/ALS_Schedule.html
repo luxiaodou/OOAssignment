@@ -1,0 +1,483 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ALS_Schedule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">study</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ALS_Schedule (study)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ALS_Schedule</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.7%
+  </span>
+  <span class="absValue">
+    (209/ 214)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package study;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.io.BufferedReader;
+<i>4</i>&nbsp;import java.io.IOException;
+<i>5</i>&nbsp;import java.io.InputStreamReader;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/**
+<i>8</i>&nbsp; * Created by luxia on 2016/3/16.
+<i>9</i>&nbsp; */
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * Overview: a little stupid 电梯调度类
+<i>13</i>&nbsp; * 根据输入的时间对于请求进行合理排序后在进行电梯调度
+<i>14</i>&nbsp; * 定义了一个用来保存请求的请求去队列
+<i>15</i>&nbsp; * 定义了最大楼层数
+<i>16</i>&nbsp; * 定义了当前时间和已经过去的时间
+<i>17</i>&nbsp; * 包含了reoOK方法，调度方法和生成请求队列的方法
+<i>18</i>&nbsp; */
+<b class="fc"><i>19</i>&nbsp;public class ALS_Schedule extends FoolSchedule {</b>
+<b class="fc"><i>20</i>&nbsp;	private RQueue rQueue = new RQueue();</b>
+<b class="fc"><i>21</i>&nbsp;	private static int MAX_FLOOR = 10;</b>
+<b class="fc"><i>22</i>&nbsp;	private double t = 0;</b>
+<b class="fc"><i>23</i>&nbsp;	private double timenow = 0;</b>
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;	/**
+<i>26</i>&nbsp;	 * 调度类的RepOK方法，用来获取当前对象不变式的值
+<i>27</i>&nbsp;	 *
+<i>28</i>&nbsp;	 * @return 当前对象不变式的值
+<i>29</i>&nbsp;	 */
+<i>30</i>&nbsp;	//Requires: this is initialized
+<i>31</i>&nbsp;	//Modifies: null
+<i>32</i>&nbsp;	//Effects : 获取当前对象不变式的值
+<i>33</i>&nbsp;	/*public boolean ALSRepOK() {
+<i>34</i>&nbsp;		if (t &lt; 0 || timenow &lt; 0) {
+<i>35</i>&nbsp;			return false;
+<i>36</i>&nbsp;		}
+<i>37</i>&nbsp;		if (MAX_FLOOR &lt; 0) {
+<i>38</i>&nbsp;			return false;
+<i>39</i>&nbsp;		}
+<i>40</i>&nbsp;		if (!(rQueue instanceof RQueue)) {
+<i>41</i>&nbsp;			return false;
+<i>42</i>&nbsp;		}
+<i>43</i>&nbsp;		return true;
+<i>44</i>&nbsp;	}
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;	/**
+<i>47</i>&nbsp;	 * 实现有点傻调度的方法
+<i>48</i>&nbsp;	 *
+<i>49</i>&nbsp;	 * @throws FormatException 如果输入的格式错误可能会抛出自定义异常
+<i>50</i>&nbsp;	 */
+<i>51</i>&nbsp;	//Requires: rQueue is built correctly
+<i>52</i>&nbsp;	//Modifies: t timenow
+<i>53</i>&nbsp;	//Effects : 对电梯进行A Little Stupid调度
+<i>54</i>&nbsp;	public boolean dispatch() throws FormatException {
+<b class="fc"><i>55</i>&nbsp;		Elevator eva1 = new Elevator();</b>
+<b class="fc"><i>56</i>&nbsp;		RQueue follow = new RQueue();</b>
+<b class="fc"><i>57</i>&nbsp;		int headreq = 0;</b>
+<b class="fc"><i>58</i>&nbsp;		int timeBuffer = 0;</b>
+<b class="fc"><i>59</i>&nbsp;		int e_floor = 1;</b>
+<b class="fc"><i>60</i>&nbsp;		boolean ret = false;</b>
+<b class="fc"><i>61</i>&nbsp;		Elevator.State e_state = Elevator.State.STAY;</b>
+<b class="fc"><i>62</i>&nbsp;		Request primary = new Request();</b>
+<b class="fc"><i>63</i>&nbsp;		int portering = 0;</b>
+<i>64</i>&nbsp;
+<b class="fc"><i>65</i>&nbsp;		for (t = 0; rQueue.getRindex() != 0 || follow.getRindex() != 0; t += 0.5) {</b>
+<b class="fc"><i>66</i>&nbsp;			if (portering &gt; 0) {</b>
+<b class="fc"><i>67</i>&nbsp;				portering--;</b>
+<b class="fc"><i>68</i>&nbsp;				continue;</b>
+<i>69</i>&nbsp;			}
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;			//build/update the &quot;follow&quot; queue, which contains primary and carrying request
+<b class="fc"><i>72</i>&nbsp;			if (follow.getRindex() == 0) {</b>
+<b class="fc"><i>73</i>&nbsp;				if (rQueue.getRequest(headreq).getTime() &gt; t) {</b>
+<b class="fc"><i>74</i>&nbsp;					continue;</b>
+<i>75</i>&nbsp;				}
+<b class="fc"><i>76</i>&nbsp;				follow.addRequest(rQueue.getRequest(headreq));  //when follow is empty, add the most recent one</b>
+<b class="fc"><i>77</i>&nbsp;				rQueue.setQueue(headreq);</b>
+<b class="fc"><i>78</i>&nbsp;				rQueue.delRequest(headreq);</b>
+<i>79</i>&nbsp;			}
+<b class="fc"><i>80</i>&nbsp;			primary = follow.getRequest(0);</b>
+<b class="fc"><i>81</i>&nbsp;			Request carry = new Request();  //choose proper one to add to the follow queue</b>
+<b class="fc"><i>82</i>&nbsp;			e_state = eva1.getState();  //获得电梯当前这0.5秒内的运动状态</b>
+<b class="fc"><i>83</i>&nbsp;			e_floor = eva1.getE_floor();</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;			for (int i = 0; i &lt; rQueue.getRindex(); i++) {</b>
+<b class="fc"><i>87</i>&nbsp;				carry = rQueue.getRequest(i);</b>
+<b class="fc"><i>88</i>&nbsp;				if (carry.getTime() &gt; t) {</b>
+<b class="fc"><i>89</i>&nbsp;					break; //ignore the &quot;future&quot; requests</b>
+<i>90</i>&nbsp;				}
+<b class="fc"><i>91</i>&nbsp;				if (!carry.inQueue()) {  //According to PPT, create the follow queue</b>
+<i>92</i>&nbsp;
+<b class="fc"><i>93</i>&nbsp;					if (carry.getType() == 1) { //Type-FR</b>
+<b class="fc"><i>94</i>&nbsp;						if ((primary.getDfloor() &gt;= e_floor &amp;&amp; carry.getDirection() == Moveable.State.UP) || (primary.getDfloor() &lt;= e_floor &amp;&amp; carry.getDirection() == Moveable.State.DOWN)) {</b>
+<b class="fc"><i>95</i>&nbsp;							if (e_state != Moveable.State.STAY) {</b>
+<b class="fc"><i>96</i>&nbsp;								if ((carry.getDirection() == Moveable.State.UP) &amp;&amp; (carry.getDfloor() &lt;= primary.getDfloor() &amp;&amp; (carry.getDfloor() &gt; e_floor))) {</b>
+<b class="fc"><i>97</i>&nbsp;									follow.addRequest(carry);</b>
+<b class="fc"><i>98</i>&nbsp;									System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>99</i>&nbsp;									rQueue.setQueue(i);</b>
+<b class="fc"><i>100</i>&nbsp;									rQueue.delRequest(i--);</b>
+<i>101</i>&nbsp;								}
+<b class="fc"><i>102</i>&nbsp;								else if ((carry.getDirection() == Moveable.State.DOWN) &amp;&amp; (carry.getDfloor() &gt;= primary.getDfloor()) &amp;&amp; (carry.getDfloor() &lt; e_floor)) {</b>
+<b class="fc"><i>103</i>&nbsp;									follow.addRequest(carry);</b>
+<b class="fc"><i>104</i>&nbsp;									System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>105</i>&nbsp;									rQueue.setQueue(i);</b>
+<b class="fc"><i>106</i>&nbsp;									rQueue.delRequest(i--);</b>
+<i>107</i>&nbsp;								}
+<i>108</i>&nbsp;							}
+<b class="fc"><i>109</i>&nbsp;							else if (e_state == Moveable.State.STAY) {</b>
+<b class="fc"><i>110</i>&nbsp;								if ((carry.getDirection() == Moveable.State.UP) &amp;&amp; (carry.getDfloor() &lt;= primary.getDfloor()) &amp;&amp; (primary.getDfloor() &gt;= e_floor) || (carry.getDirection() == Moveable.State.DOWN) &amp;&amp; (carry.getDfloor() &gt;= primary.getDfloor()) &amp;&amp; (primary.getDfloor() &lt;= e_floor)) {</b>
+<b class="fc"><i>111</i>&nbsp;									follow.addRequest(carry);</b>
+<b class="fc"><i>112</i>&nbsp;									System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>113</i>&nbsp;									rQueue.setQueue(i);</b>
+<b class="fc"><i>114</i>&nbsp;									rQueue.delRequest(i--);</b>
+<i>115</i>&nbsp;								}
+<i>116</i>&nbsp;							}
+<i>117</i>&nbsp;						}
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;					}
+<b class="fc"><i>120</i>&nbsp;					else if (carry.getType() == 0) {  //Type-ER</b>
+<b class="fc"><i>121</i>&nbsp;						if (e_state == Moveable.State.UP &amp;&amp; carry.getDfloor() &gt; e_floor) {</b>
+<b class="fc"><i>122</i>&nbsp;							follow.addRequest(carry);</b>
+<b class="fc"><i>123</i>&nbsp;							System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>124</i>&nbsp;							rQueue.setQueue(i);</b>
+<b class="fc"><i>125</i>&nbsp;							rQueue.delRequest(i--);</b>
+<i>126</i>&nbsp;						}
+<b class="fc"><i>127</i>&nbsp;						if (e_state == Moveable.State.DOWN &amp;&amp; carry.getDfloor() &lt; e_floor) {</b>
+<b class="fc"><i>128</i>&nbsp;							follow.addRequest(carry);</b>
+<b class="fc"><i>129</i>&nbsp;							System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>130</i>&nbsp;							rQueue.setQueue(i);</b>
+<b class="fc"><i>131</i>&nbsp;							rQueue.delRequest(i--);</b>
+<i>132</i>&nbsp;						}
+<b class="fc"><i>133</i>&nbsp;						if (e_state == Moveable.State.STAY) {</b>
+<b class="fc"><i>134</i>&nbsp;							if (primary.getDfloor() &gt;= e_floor &amp;&amp; carry.getDfloor() &gt;= e_floor || primary.getDfloor() &lt;= e_floor &amp;&amp; carry.getDfloor() &lt;= e_floor) {</b>
+<b class="fc"><i>135</i>&nbsp;								follow.addRequest(carry);</b>
+<b class="fc"><i>136</i>&nbsp;								System.out.println(&quot;New carrying order:\t\t\t&quot; + primary.toString() + &quot; (&quot; + carry.toString() + &quot;)&quot;);</b>
+<b class="fc"><i>137</i>&nbsp;								rQueue.setQueue(i);</b>
+<b class="fc"><i>138</i>&nbsp;								rQueue.delRequest(i--);</b>
+<i>139</i>&nbsp;							}
+<i>140</i>&nbsp;						}
+<i>141</i>&nbsp;					}
+<i>142</i>&nbsp;				}
+<i>143</i>&nbsp;			}
+<i>144</i>&nbsp;			//choose the request to complete right now,whose name is primary
+<b class="fc"><i>145</i>&nbsp;			primary = follow.getRequest(0);//follow[0] is always the primary request,finish it first</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;			//finish carryings
+<b class="fc"><i>148</i>&nbsp;			for (int i = 1; i &lt; follow.getRindex(); i++) {  //start from the first carry req</b>
+<b class="fc"><i>149</i>&nbsp;				Request carryBuffer = follow.getRequest(i);</b>
+<b class="fc"><i>150</i>&nbsp;				if (carryBuffer.isDone()) {</b>
+<b class="fc"><i>151</i>&nbsp;					continue;</b>
+<i>152</i>&nbsp;				}
+<b class="fc"><i>153</i>&nbsp;				if (eva1.getE_floor() == carryBuffer.getDfloor()) {</b>
+<b class="fc"><i>154</i>&nbsp;					if (carryBuffer.getDfloor() != primary.getDfloor()) {</b>
+<b class="fc"><i>155</i>&nbsp;						System.out.println(&quot;Carrying request complete:&quot; + &quot;\t&quot; + &quot;(&quot; + eva1.getE_floor() + &quot;,&quot; + eva1.getState() + &quot;,&quot; + t + &quot;)&quot;);</b>
+<i>156</i>&nbsp;					}
+<b class="fc"><i>157</i>&nbsp;					for (int j = 1; j &lt; follow.getRindex(); j++) //delete the request in the same floor</b>
+<b class="fc"><i>158</i>&nbsp;						if (e_floor == follow.getRequest(j).getDfloor()) {</b>
+<b class="fc"><i>159</i>&nbsp;							follow.setDone(j);</b>
+<i>160</i>&nbsp;						}
+<b class="fc"><i>161</i>&nbsp;					portering = 2;</b>
+<i>162</i>&nbsp;				}
+<i>163</i>&nbsp;			}
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;			//finish primary
+<b class="fc"><i>166</i>&nbsp;			if (primary.getDfloor() &gt; e_floor) {</b>
+<b class="fc"><i>167</i>&nbsp;				eva1.move(Moveable.State.UP);</b>
+<i>168</i>&nbsp;			}
+<b class="fc"><i>169</i>&nbsp;			else if (primary.getDfloor() &lt; e_floor) {</b>
+<b class="fc"><i>170</i>&nbsp;				eva1.move(Moveable.State.DOWN);</b>
+<i>171</i>&nbsp;			}
+<b class="fc"><i>172</i>&nbsp;			else if (primary.getDfloor() == eva1.getE_floor()) { //need to open the door</b>
+<b class="fc"><i>173</i>&nbsp;				follow.setDone(0);</b>
+<b class="fc"><i>174</i>&nbsp;				follow.getRequest(0);</b>
+<b class="fc"><i>175</i>&nbsp;				System.out.print(&quot;Primary request complete : \t&quot;);</b>
+<b class="fc"><i>176</i>&nbsp;				System.out.println(eva1.toString() + t + &quot;)&quot;);  //print state info</b>
+<b class="fc"><i>177</i>&nbsp;				System.out.print(&quot;Carrying status : \t\t\t&quot;);</b>
+<b class="fc"><i>178</i>&nbsp;				follow.info();                                  //print carry info</b>
+<b class="fc"><i>179</i>&nbsp;				System.out.println();</b>
+<b class="fc"><i>180</i>&nbsp;				for (int bf = follow.getRindex() - 1; bf &gt;= 0; bf--) {</b>
+<b class="fc"><i>181</i>&nbsp;					if (follow.getRequest(bf).isDone()) {</b>
+<b class="fc"><i>182</i>&nbsp;						follow.delRequest(bf);</b>
+<i>183</i>&nbsp;					}
+<i>184</i>&nbsp;				}
+<b class="fc"><i>185</i>&nbsp;				eva1.move(Moveable.State.STAY);</b>
+<b class="fc"><i>186</i>&nbsp;				portering = 1;</b>
+<i>187</i>&nbsp;			}
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;			//after finishing the operation in this time section, update the state of requests&#39; queue, output the finished ones
+<i>190</i>&nbsp;			//redefine headreq,the first &#39;notDone&#39; request in the rQueue
+<b class="fc"><i>191</i>&nbsp;			for (int i = 0; i &lt; rQueue.getRindex(); i++) {</b>
+<b class="fc"><i>192</i>&nbsp;				if (!rQueue.getRequest(i).inQueue()) {</b>
+<b class="fc"><i>193</i>&nbsp;					headreq = i;</b>
+<b class="fc"><i>194</i>&nbsp;					break;</b>
+<i>195</i>&nbsp;				}
+<i>196</i>&nbsp;			}
+<i>197</i>&nbsp;		}
+<b class="fc"><i>198</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>199</i>&nbsp;		return ret;</b>
+<i>200</i>&nbsp;	}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;	/**
+<i>203</i>&nbsp;	 * 请求读入的方法
+<i>204</i>&nbsp;	 *
+<i>205</i>&nbsp;	 * @throws IOException     可能会抛出IO异常
+<i>206</i>&nbsp;	 * @throws FormatException 可能会爆出自定义的格式异常，如果出现此类型异常，则为输入格式错误
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	//Requires: 控制台输入
+<i>209</i>&nbsp;	//Modifies: rQueue bf
+<i>210</i>&nbsp;	//Effects : 读入请求并将其放入请求队列
+<i>211</i>&nbsp;	@Override
+<i>212</i>&nbsp;	public boolean bulidQueue() throws IOException, FormatException {
+<b class="fc"><i>213</i>&nbsp;		BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));</b>
+<i>214</i>&nbsp;		int ch;
+<b class="fc"><i>215</i>&nbsp;		int floor = 1;</b>
+<b class="fc"><i>216</i>&nbsp;		int time = 0;</b>
+<b class="fc"><i>217</i>&nbsp;		int dir = 1;</b>
+<b class="fc"><i>218</i>&nbsp;		int type = 1;   //0 - ER;1 - FR</b>
+<b class="fc"><i>219</i>&nbsp;		int needenter = 0;</b>
+<b class="fc"><i>220</i>&nbsp;		boolean ret = false;</b>
+<i>221</i>&nbsp;
+<b class="fc"><i>222</i>&nbsp;		ch = bf.read();</b>
+<b class="fc"><i>223</i>&nbsp;		while (ch != -1) {</b>
+<b class="fc"><i>224</i>&nbsp;			if (ch == &#39; &#39; || ch == &#39;\t&#39;) {</b>
+<b class="fc"><i>225</i>&nbsp;				ch = bf.read();</b>
+<b class="fc"><i>226</i>&nbsp;				continue;</b>
+<i>227</i>&nbsp;			}
+<b class="fc"><i>228</i>&nbsp;			if (ch == &#39;(&#39; &amp;&amp; needenter == 0) {</b>
+<b class="fc"><i>229</i>&nbsp;				needenter = 1;</b>
+<b class="fc"><i>230</i>&nbsp;				Boolean knowntype = false;  //完成类型输入的标识符</b>
+<b class="fc"><i>231</i>&nbsp;				Boolean floorerror = false;  //楼层输入是否有错的表示符</b>
+<b class="fc"><i>232</i>&nbsp;				Boolean finishdir = false;  //完成方向输入的标识符</b>
+<b class="fc"><i>233</i>&nbsp;				Boolean finishnum = false;</b>
+<b class="fc"><i>234</i>&nbsp;				while ((ch = bf.read()) != &#39;)&#39;) {</b>
+<b class="fc"><i>235</i>&nbsp;					if (ch == &#39; &#39; || ch == &#39;\t&#39;) {</b>
+<b class="fc"><i>236</i>&nbsp;						continue;</b>
+<i>237</i>&nbsp;					}
+<b class="fc"><i>238</i>&nbsp;					if (ch == &#39;F&#39; || ch == &#39;E&#39;) {</b>
+<b class="fc"><i>239</i>&nbsp;						if (ch == &#39;E&#39;) {</b>
+<b class="fc"><i>240</i>&nbsp;							finishdir = true;</b>
+<b class="fc"><i>241</i>&nbsp;							type = 0;</b>
+<i>242</i>&nbsp;						}
+<i>243</i>&nbsp;						else {
+<b class="fc"><i>244</i>&nbsp;							finishdir = false;</b>
+<b class="fc"><i>245</i>&nbsp;							type = 1;</b>
+<i>246</i>&nbsp;						}
+<b class="fc"><i>247</i>&nbsp;						while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>248</i>&nbsp;						if (ch == &#39;R&#39;) {</b>
+<b class="fc"><i>249</i>&nbsp;							knowntype = true;</b>
+<b class="fc"><i>250</i>&nbsp;							while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>251</i>&nbsp;							if (ch == &#39;,&#39;) {</b>
+<b class="fc"><i>252</i>&nbsp;								Boolean kong = true;</b>
+<b class="fc"><i>253</i>&nbsp;								int sign = 1;</b>
+<b class="fc"><i>254</i>&nbsp;								int signnum = 0;</b>
+<b class="fc"><i>255</i>&nbsp;								Boolean moresign = true;</b>
+<b class="fc"><i>256</i>&nbsp;								Boolean err = false;</b>
+<b class="fc"><i>257</i>&nbsp;								int temp = 0;</b>
+<b class="fc"><i>258</i>&nbsp;								while ((ch = bf.read()) != &#39;,&#39;) {</b>
+<b class="fc"><i>259</i>&nbsp;									if (ch == &#39; &#39; || ch == &#39;\t&#39;) {</b>
+<b class="fc"><i>260</i>&nbsp;										continue;</b>
+<i>261</i>&nbsp;									}
+<b class="fc"><i>262</i>&nbsp;									else if (ch == &#39;+&#39; &amp;&amp; moresign) {</b>
+<b class="fc"><i>263</i>&nbsp;										moresign = false;</b>
+<i>264</i>&nbsp;									}
+<b class="fc"><i>265</i>&nbsp;									else if (ch == &#39;-&#39;) {</b>
+<b class="fc"><i>266</i>&nbsp;										signnum++;</b>
+<b class="fc"><i>267</i>&nbsp;										err = true;</b>
+<i>268</i>&nbsp;									}
+<b class="fc"><i>269</i>&nbsp;									else if (ch &gt;= &#39;0&#39; || ch &lt;= &#39;9&#39;) {</b>
+<b class="fc"><i>270</i>&nbsp;										moresign = false;</b>
+<b class="fc"><i>271</i>&nbsp;										kong = false;</b>
+<b class="fc"><i>272</i>&nbsp;										temp = temp * 10 + ch - &#39;0&#39;;</b>
+<b class="fc"><i>273</i>&nbsp;										if (temp &gt; 10) {</b>
+<b class="fc"><i>274</i>&nbsp;											err = true;</b>
+<i>275</i>&nbsp;										}
+<i>276</i>&nbsp;									}
+<i>277</i>&nbsp;									else {
+<b class="nc"><i>278</i>&nbsp;										err = true;</b>
+<b class="nc"><i>279</i>&nbsp;										break;</b>
+<i>280</i>&nbsp;									} //throw new FormatException(&quot;楼层部分输入错误！&quot;);
+<i>281</i>&nbsp;								}
+<b class="fc"><i>282</i>&nbsp;								floorerror = (signnum &gt; 1) || kong || (temp &gt; MAX_FLOOR) || moresign || err || (temp == 0);</b>
+<b class="fc"><i>283</i>&nbsp;								if (floorerror) {</b>
+<b class="fc"><i>284</i>&nbsp;									break; // throw new FormatException(&quot;楼层部分输入错误！&quot;);</b>
+<i>285</i>&nbsp;								}
+<i>286</i>&nbsp;								else {
+<b class="fc"><i>287</i>&nbsp;									floor = temp;</b>
+<b class="fc"><i>288</i>&nbsp;									temp = 0;</b>
+<b class="fc"><i>289</i>&nbsp;									if (!finishdir) {</b>
+<b class="fc"><i>290</i>&nbsp;										while ((ch = bf.read()) != &#39;,&#39;) {</b>
+<b class="fc"><i>291</i>&nbsp;											if (ch == &#39; &#39; || ch == &#39;\t&#39;) {</b>
+<b class="fc"><i>292</i>&nbsp;												continue;</b>
+<i>293</i>&nbsp;											}
+<b class="fc"><i>294</i>&nbsp;											if (finishdir) {</b>
+<b class="nc"><i>295</i>&nbsp;												break;</b>
+<i>296</i>&nbsp;											}
+<b class="fc"><i>297</i>&nbsp;											if (ch == &#39;U&#39;) {</b>
+<b class="fc"><i>298</i>&nbsp;												while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>299</i>&nbsp;												if (ch == &#39;P&#39;) {</b>
+<b class="fc"><i>300</i>&nbsp;													if (floor == 10) {</b>
+<b class="fc"><i>301</i>&nbsp;														break;</b>
+<i>302</i>&nbsp;													}
+<b class="fc"><i>303</i>&nbsp;													dir = 1;    //1 means up</b>
+<b class="fc"><i>304</i>&nbsp;													finishdir = true;</b>
+<i>305</i>&nbsp;												}
+<i>306</i>&nbsp;												else {
+<i>307</i>&nbsp;													break; // throw new FormatException(&quot;方向输入错误！&quot;);
+<i>308</i>&nbsp;												}
+<i>309</i>&nbsp;											}
+<b class="fc"><i>310</i>&nbsp;											else if (ch == &#39;D&#39;) {</b>
+<b class="fc"><i>311</i>&nbsp;												while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>312</i>&nbsp;												if (ch == &#39;O&#39;) {</b>
+<b class="fc"><i>313</i>&nbsp;													while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>314</i>&nbsp;													if (ch == &#39;W&#39;) {</b>
+<b class="fc"><i>315</i>&nbsp;														while ((ch = bf.read()) == &#39; &#39; || ch == &#39;\t&#39;) continue;</b>
+<b class="fc"><i>316</i>&nbsp;														if (ch == &#39;N&#39;) {</b>
+<b class="fc"><i>317</i>&nbsp;															if (floor == 1) {</b>
+<b class="fc"><i>318</i>&nbsp;																break;</b>
+<i>319</i>&nbsp;															}
+<b class="fc"><i>320</i>&nbsp;															dir = -1;   //-1 means down</b>
+<b class="fc"><i>321</i>&nbsp;															finishdir = true;</b>
+<i>322</i>&nbsp;														}
+<i>323</i>&nbsp;														else {
+<i>324</i>&nbsp;															break; //throw new FormatException(&quot;方向输入错误！&quot;);
+<i>325</i>&nbsp;														}
+<i>326</i>&nbsp;													}
+<i>327</i>&nbsp;													else {
+<i>328</i>&nbsp;														break; //throw new FormatException(&quot;方向输入错误！&quot;);
+<i>329</i>&nbsp;													}
+<i>330</i>&nbsp;												}
+<i>331</i>&nbsp;												else {
+<i>332</i>&nbsp;													break; //throw new FormatException(&quot;方向输入错误！&quot;);
+<i>333</i>&nbsp;												}
+<i>334</i>&nbsp;											}
+<i>335</i>&nbsp;											else {
+<i>336</i>&nbsp;												break; //throw new FormatException(&quot;方向输入错误！&quot;);
+<i>337</i>&nbsp;											}
+<i>338</i>&nbsp;										}
+<i>339</i>&nbsp;									}
+<b class="fc"><i>340</i>&nbsp;									if (!finishdir) {</b>
+<b class="fc"><i>341</i>&nbsp;										break;</b>
+<i>342</i>&nbsp;									}
+<i>343</i>&nbsp;
+<b class="fc"><i>344</i>&nbsp;									while ((ch = bf.read()) != &#39;)&#39;) {</b>
+<b class="fc"><i>345</i>&nbsp;										if (ch == &#39; &#39; || ch == &#39;\t&#39;) {</b>
+<b class="nc"><i>346</i>&nbsp;											continue;</b>
+<i>347</i>&nbsp;										}
+<b class="fc"><i>348</i>&nbsp;										else if (ch &gt;= &#39;0&#39; &amp;&amp; ch &lt;= &#39;9&#39;) {</b>
+<b class="fc"><i>349</i>&nbsp;											temp = temp * 10 + ch - &#39;0&#39;;</b>
+<b class="fc"><i>350</i>&nbsp;											time = temp;</b>
+<b class="fc"><i>351</i>&nbsp;											finishnum = true;</b>
+<b class="fc"><i>352</i>&nbsp;											if (temp &gt; 100000000) {</b>
+<b class="fc"><i>353</i>&nbsp;												break;</b>
+<i>354</i>&nbsp;											}
+<i>355</i>&nbsp;										}
+<i>356</i>&nbsp;										else {
+<i>357</i>&nbsp;											break; // throw new FormatException(&quot;时间输入错误！&quot;);
+<i>358</i>&nbsp;										}
+<i>359</i>&nbsp;									}
+<b class="fc"><i>360</i>&nbsp;									if (finishnum) {</b>
+<b class="fc"><i>361</i>&nbsp;										break;</b>
+<i>362</i>&nbsp;									}
+<i>363</i>&nbsp;									else {
+<b class="nc"><i>364</i>&nbsp;										throw new FormatException(&quot;时间输入错误！&quot;);</b>
+<i>365</i>&nbsp;									}
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;								}
+<i>368</i>&nbsp;							}
+<i>369</i>&nbsp;							else {
+<i>370</i>&nbsp;								break; //throw new FormatException(&quot;请求类型错误！&quot;);
+<i>371</i>&nbsp;							}
+<i>372</i>&nbsp;						}
+<i>373</i>&nbsp;						else break; //throw new FormatException(&quot;请求类型错误！&quot;);
+<i>374</i>&nbsp;					}
+<i>375</i>&nbsp;					else break; //throw new FormatException(&quot;请求类型错误！&quot;);
+<i>376</i>&nbsp;				}
+<b class="fc"><i>377</i>&nbsp;				if (ch == &#39;)&#39; &amp;&amp; knowntype &amp;&amp; !floorerror &amp;&amp; finishdir &amp;&amp; finishnum) {</b>
+<b class="fc"><i>378</i>&nbsp;					if (time &lt; timenow) throw new FormatException(&quot;请输入按时间排序的请求序列！&quot;);</b>
+<b class="fc"><i>379</i>&nbsp;					if (time != 0 &amp;&amp; rQueue.getRindex() == 0) throw new FormatException(&quot;第一个请求的时间要求为0！&quot;);</b>
+<i>380</i>&nbsp;
+<b class="fc"><i>381</i>&nbsp;					timenow = time;</b>
+<b class="fc"><i>382</i>&nbsp;					Request rq = new Request(floor, time, type, dir);</b>
+<b class="fc"><i>383</i>&nbsp;					rQueue.addRequest(rq);</b>
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;				}
+<b class="fc"><i>387</i>&nbsp;			}</b>
+<b class="fc"><i>388</i>&nbsp;			else if (ch == 10) {</b>
+<b class="fc"><i>389</i>&nbsp;				needenter = 0;</b>
+<b class="fc"><i>390</i>&nbsp;				if ((ch = bf.read()) == &#39;r&#39;) if ((ch = bf.read()) == &#39;u&#39;) if ((ch = bf.read()) == &#39;n&#39;) break;</b>
+<i>391</i>&nbsp;			}
+<i>392</i>&nbsp;			else {
+<b class="fc"><i>393</i>&nbsp;				ch = bf.read();</b>
+<i>394</i>&nbsp;			}
+<i>395</i>&nbsp;		}
+<b class="fc"><i>396</i>&nbsp;		ret = true;</b>
+<b class="fc"><i>397</i>&nbsp;		return ret;</b>
+<i>398</i>&nbsp;	}
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2016-06-04 11:07</div>
+</div>
+</body>
+</html>

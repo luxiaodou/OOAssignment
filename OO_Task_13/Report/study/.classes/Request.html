@@ -1,0 +1,153 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Request</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">study</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Request (study)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Request</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (32/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package study;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;public class Request {
+<i>4</i>&nbsp;    private int time;
+<i>5</i>&nbsp;    private int dfloor;
+<i>6</i>&nbsp;    private Moveable.State direction;
+<i>7</i>&nbsp;    private int type;
+<i>8</i>&nbsp;    private Boolean inQueue;
+<i>9</i>&nbsp;    private Boolean isDone;
+<i>10</i>&nbsp;
+<b class="fc"><i>11</i>&nbsp;    public Request() {</b>
+<b class="fc"><i>12</i>&nbsp;        this.isDone = false;</b>
+<b class="fc"><i>13</i>&nbsp;        this.inQueue = false;</b>
+<b class="fc"><i>14</i>&nbsp;        this.time = 0;</b>
+<b class="fc"><i>15</i>&nbsp;        this.dfloor = 1;</b>
+<b class="fc"><i>16</i>&nbsp;        this.type = 1;</b>
+<b class="fc"><i>17</i>&nbsp;        this.direction = Moveable.State.UP;</b>
+<b class="fc"><i>18</i>&nbsp;    }</b>
+<i>19</i>&nbsp;
+<b class="fc"><i>20</i>&nbsp;    public Request(int dfloor, int time, int type, int dir) {</b>
+<b class="fc"><i>21</i>&nbsp;        this.isDone = false;</b>
+<b class="fc"><i>22</i>&nbsp;        this.time = time;</b>
+<b class="fc"><i>23</i>&nbsp;        this.dfloor = dfloor;</b>
+<b class="fc"><i>24</i>&nbsp;        this.inQueue = false;</b>
+<b class="fc"><i>25</i>&nbsp;        this.type = type;</b>
+<b class="fc"><i>26</i>&nbsp;        if (type == 0) direction = null;</b>
+<b class="fc"><i>27</i>&nbsp;        else if (dir == 1) direction = Moveable.State.UP;</b>
+<b class="fc"><i>28</i>&nbsp;        else direction = Moveable.State.DOWN;</b>
+<b class="fc"><i>29</i>&nbsp;    }</b>
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    public void Done() {
+<b class="fc"><i>32</i>&nbsp;        isDone = true;</b>
+<b class="fc"><i>33</i>&nbsp;    }</b>
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    public Boolean isDone() {
+<b class="fc"><i>36</i>&nbsp;        return isDone;</b>
+<i>37</i>&nbsp;    }
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    public Boolean inQueue() {
+<b class="fc"><i>40</i>&nbsp;        return inQueue;</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    public void setInQueue() {
+<b class="fc"><i>44</i>&nbsp;        inQueue = true;</b>
+<b class="fc"><i>45</i>&nbsp;    }</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    public Moveable.State getDirection() {
+<b class="fc"><i>48</i>&nbsp;        return direction;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    public int getType() {
+<b class="fc"><i>52</i>&nbsp;        return type;</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    public int getTime() {
+<b class="fc"><i>56</i>&nbsp;        return time;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;    public int getDfloor() {
+<b class="fc"><i>60</i>&nbsp;        return dfloor;</b>
+<i>61</i>&nbsp;    }
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    @Override
+<i>64</i>&nbsp;    public String toString() {
+<b class="fc"><i>65</i>&nbsp;        String a = new String();</b>
+<b class="fc"><i>66</i>&nbsp;        if (type == 0) a = &quot;(ER,&quot; + dfloor + &quot;,&quot; + time + &quot;)&quot;;</b>
+<b class="fc"><i>67</i>&nbsp;        else if (type == 1) a = &quot;(FR,&quot; + dfloor + &#39;,&#39; + direction + &quot;,&quot; + time + &quot;)&quot;;</b>
+<b class="fc"><i>68</i>&nbsp;        return a;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2016-06-04 11:07</div>
+</div>
+</body>
+</html>
